@@ -1,0 +1,62 @@
+{
+    "_id": "598c24dae3b1fa001000693d",
+    "createdAt": "2017-08-10T09:18:18.624Z",
+    "updatedAt": "2020-03-21T14:56:02.738Z",
+    "name": "Steingasse Feinstaub Temp Luftfeuchte 1030 Wien",
+    "grouptag": "wuesta",
+    "exposure": "outdoor",
+    "sensors": [
+        {
+            "title": "PM10",
+            "unit": "µg/m³",
+            "sensorType": "SDS 011",
+            "icon": "osem-cloud",
+            "_id": "598c24dae3b1fa0010006941",
+            "lastMeasurement": {
+                "value": "7.77",
+                "createdAt": "2020-03-21T14:56:02.725Z"
+            }
+        },
+        {
+            "title": "PM2.5",
+            "unit": "µg/m³",
+            "sensorType": "SDS 011",
+            "icon": "osem-cloud",
+            "_id": "598c24dae3b1fa0010006940",
+            "lastMeasurement": {
+                "value": "7.03",
+                "createdAt": "2020-03-21T14:56:02.725Z"
+            }
+        },
+        {
+            "_id": "5d99eb5c5f3de0001a0cfaae",
+            "icon": "osem-thermometer",
+            "sensorType": "BME280",
+            "unit": "Celsius",
+            "title": "Temperator"
+        }
+    ],
+    "model": "luftdaten_sds011_dht22",
+    "currentLocation": {
+        "coordinates": [
+            16.393815,
+            48.193172
+        ],
+        "type": "Point",
+        "timestamp": "2017-08-10T09:18:18.000Z"
+    },
+    "lastMeasurementAt": "2020-03-21T14:56:02.725Z",
+    "loc": [
+        {
+            "geometry": {
+                "coordinates": [
+                    16.393815,
+                    48.193172
+                ],
+                "type": "Point",
+                "timestamp": "2017-08-10T09:18:18.000Z"
+            },
+            "type": "Feature"
+        }
+    ]
+}
