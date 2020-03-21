@@ -1,0 +1,1 @@
+Get all boxes in Vienna : { "url" : "https://api.opensensemap.org/boxes?bbox=14.813876,47.668097,17.548442,48.877302&full=true" }
