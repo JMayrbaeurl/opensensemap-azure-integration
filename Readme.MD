@@ -1,0 +1,1 @@
+# Sample showing OpenSenseMap integration with Azure services
