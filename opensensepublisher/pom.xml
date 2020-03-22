@@ -27,7 +27,13 @@
 			<groupId>com.microsoft.azure</groupId>
 			<artifactId>spring-cloud-azure-eventhubs-stream-binder</artifactId>
 			<version>1.2.2</version>
-		 </dependency>
+		</dependency>
+
+		<dependency>
+			<groupId>com.microsoft.samples.iot.opensense</groupId>
+			<artifactId>opensense-intf</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
