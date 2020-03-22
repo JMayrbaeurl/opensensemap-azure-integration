@@ -1,4 +1,4 @@
-package com.microsoft.samples.iot.opensense.demo;
+package com.microsoft.samples.iot.opensense.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

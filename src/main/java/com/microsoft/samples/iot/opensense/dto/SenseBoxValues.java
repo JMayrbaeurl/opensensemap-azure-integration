@@ -1,4 +1,4 @@
-package com.microsoft.samples.iot.opensense.demo;
+package com.microsoft.samples.iot.opensense.dto;
 
 import java.util.Date;
 import java.util.List;
