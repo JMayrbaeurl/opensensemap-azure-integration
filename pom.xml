@@ -7,6 +7,25 @@
 	<artifactId>opensense</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>jmayrbaeurl</id>
+			<email>jurgenma@microsoft.com</email>
+			<name>Juergen Mayrbaeurl</name>
+			<organization>Microsoft</organization>
+		</developer>
+	</developers>
+	<scm>
+		<url>scm:git:https://github.com/JMayrbaeurl/opensensemap-azure-integration.git</url>
+	</scm>
     
 	<name>OpenSense Azure Integration</name>
 	<description>Full Azure integration for OpenSenseMap service</description>
