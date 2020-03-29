@@ -4,16 +4,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
- * ScheduledPublisher
+ * SingleBoxSchedulerConfiguration
  */
-@Component
-public class ScheduledPublisher {
+@ConditionalOnProperty(name="opensensemap.publisher.boxid")
+@Configuration
+public class SingleBoxSchedulerConfiguration {
 
-    private static final Log logger = LogFactory.getLog(ScheduledPublisher.class);
+    private static final Log logger = LogFactory.getLog(SingleBoxSchedulerConfiguration.class);
 
     @Autowired
     private EHSender sender;
@@ -21,7 +23,7 @@ public class ScheduledPublisher {
     @Autowired 
     private SenseBoxReader reader;
 
-    @Value("${opensensemap.publisher.boxid:598c24dae3b1fa001000693d}")
+    @Value("${opensensemap.publisher.boxid}")
     private String sensorBoxID;
 
     @Scheduled(fixedRateString="${opensensemap.publisher.fixedRate:15000}", initialDelay=5000)

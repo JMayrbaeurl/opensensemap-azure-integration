@@ -26,7 +26,8 @@ public class OpenSenseMapReader implements SenseBoxReader {
     private final WebClient webClient;
 
     public OpenSenseMapReader(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(this.serviceUrl != null ? this.serviceUrl : "https://api.opensensemap.org").build();
+        this.webClient = webClientBuilder
+                .baseUrl(this.serviceUrl != null ? this.serviceUrl : "https://api.opensensemap.org").build();
     }
 
     @Override
@@ -40,15 +41,13 @@ public class OpenSenseMapReader implements SenseBoxReader {
         return result;
     }
 
-    
     @Override
     public String readLatestValuesAsString(final String id) {
 
         Assert.hasText(id, "Parameter id must contain text");
         logger.info("Calling OpenSenseMap API for box with id " + id);
 
-        String result = this.webClient.get().uri("/boxes/{id}", id).retrieve().bodyToMono(String.class)
-                .block();
+        String result = this.webClient.get().uri("/boxes/{id}", id).retrieve().bodyToMono(String.class).block();
         return result;
     }
 
@@ -61,6 +60,15 @@ public class OpenSenseMapReader implements SenseBoxReader {
         return Arrays.asList(result);
     }
 
+    @Override
+    public String readLatestValuesInBBoxAsString(String bbox) {
+
+        String result = this.webClient.get().uri("/boxes?bbox={bbox}&full=true", bbox).retrieve()
+                .bodyToMono(String.class).block();
+
+        return result;
+     }
+
     public String getServiceUrl() {
         return serviceUrl;
     }
@@ -68,4 +76,5 @@ public class OpenSenseMapReader implements SenseBoxReader {
     public void setServiceUrl(String serviceUrl) {
         this.serviceUrl = serviceUrl;
     }
+
 }

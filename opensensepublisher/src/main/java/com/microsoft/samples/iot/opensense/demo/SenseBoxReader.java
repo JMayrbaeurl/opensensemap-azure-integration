@@ -11,5 +11,7 @@ public interface SenseBoxReader {
 
     public SenseBoxValues readLatestValues(String id);
     public String readLatestValuesAsString(String id);
+
     public List<SenseBoxValues> readLatestValuesInBBox(String bbox);
+    public String readLatestValuesInBBoxAsString(String bbox);
 }
