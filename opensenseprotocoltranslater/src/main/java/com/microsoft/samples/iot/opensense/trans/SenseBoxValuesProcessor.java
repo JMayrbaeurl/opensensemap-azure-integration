@@ -1,7 +1,6 @@
 package com.microsoft.samples.iot.opensense.trans;
 
 import java.util.List;
-import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
@@ -58,8 +57,10 @@ public class SenseBoxValuesProcessor {
 
     private ObjectMapper objectMapper;
 
+    /*
     @Autowired
     private Function<SenseBoxValues, SensorBoxEvent> transformSingle;
+    */
 
     @Autowired
     private Source source;
@@ -79,14 +80,15 @@ public class SenseBoxValuesProcessor {
         logger.debug("Message contents: " + message);
 
         if (message != null && message.length() > 0) {
-            if (message.startsWith("[")) {
+            if (message.trim().startsWith("[")) {
                 logger.info("Processing values from multiple sensor boxes");
                 try {
                     List<SenseBoxValues> listValues = objectMapper.readValue(message, new TypeReference<List<SenseBoxValues>>(){});
                     if(listValues != null && listValues.size() > 0) {
                         for(int i = 0; i < listValues.size(); i++) {
-                            this.source.output().send(
-                                new GenericMessage<SensorBoxEvent>(this.transformSingle.apply(listValues.get(i))));
+                            SensorBoxEvent event = this.createEventFromValues(listValues.get(i));
+                            if (event.hasAnyValues())
+                                this.source.output().send(new GenericMessage<SensorBoxEvent>(event));
                         }
                     }
                     logger.info("Translated and forwarded sensor values of " + listValues.size() + " sensor boxes");
@@ -98,8 +100,9 @@ public class SenseBoxValuesProcessor {
                     SenseBoxValues values = this.objectMapper.readValue(message, SenseBoxValues.class);
                     if (values != null) {
                         logger.info("Translating latest values from box with id " + values.getId());
-                        this.source.output().send(
-                            new GenericMessage<SensorBoxEvent>(this.transformSingle.apply(values)));
+                        SensorBoxEvent event = this.createEventFromValues(values);
+                        if (event.hasAnyValues())
+                            this.source.output().send(new GenericMessage<SensorBoxEvent>(event));
                     }
                 } catch (JsonProcessingException e) {
                     logger.error("Exception on processing Json message '" + message + "'", e);
@@ -113,5 +116,11 @@ public class SenseBoxValuesProcessor {
             }
             return null;
         });
+    }
+
+    private SensorBoxEvent createEventFromValues(SenseBoxValues values) {
+
+        //return this.transformSingle.apply(values);
+        return new SensorBoxEvent(values);
     }
 }
