@@ -6,16 +6,16 @@ import com.microsoft.samples.iot.opensense.dto.SenseBoxValues;
 import com.microsoft.samples.iot.opensense.dto.SensorBoxMeasurement;
 import com.microsoft.samples.iot.opensense.dto.SensorBoxSensorValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import org.junit.Assert;
 
 /**
  * SensorBoxEventTests
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SensorBoxEventTests {
 
     @Test
@@ -31,7 +31,7 @@ public class SensorBoxEventTests {
         value.setLastMeasurement(lastMeasurement);
         values.getSensors().add(value);
         SensorBoxEvent event = new SensorBoxEvent(values);
-        Assert.assertEquals("TestID", event.getId());
-        Assert.assertEquals(1.1, event.getPm10(), .01);
+        Assertions.assertEquals("TestID", event.getId());
+        Assertions.assertEquals(1.1, event.getPm10(), .01);
     }
 }

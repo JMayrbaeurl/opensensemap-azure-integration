@@ -4,16 +4,16 @@ import java.util.List;
 
 import com.microsoft.samples.iot.opensense.dto.SenseBoxValues;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * OpenSenseMapReaderTests
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class OpenSenseMapReaderTests {
 
     @Test
@@ -21,8 +21,8 @@ public class OpenSenseMapReaderTests {
 
         OpenSenseMapReader reader = new OpenSenseMapReader(WebClient.builder());
         SenseBoxValues sensorBox = reader.readLatestValues("598c24dae3b1fa001000693d");
-        Assert.assertNotNull(sensorBox);
-        Assert.assertEquals("598c24dae3b1fa001000693d", sensorBox.getId());
+        Assertions.assertNotNull(sensorBox);
+        Assertions.assertEquals("598c24dae3b1fa001000693d", sensorBox.getId());
     }
 
     @Test
@@ -30,6 +30,6 @@ public class OpenSenseMapReaderTests {
 
         OpenSenseMapReader reader = new OpenSenseMapReader(WebClient.builder());
         List<SenseBoxValues> sensorBoxes = reader.readLatestValuesInBBox("14.813876,47.668097,17.548442,48.877302");
-        Assert.assertNotNull(sensorBoxes);
+        Assertions.assertNotNull(sensorBoxes);
     }
 }
