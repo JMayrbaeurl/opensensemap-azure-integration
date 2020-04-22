@@ -1,0 +1,297 @@
+{
+  "@id": "urn:senseBox:sample:homeV2WifiFeinstaub:1",
+  "@type": "CapabilityModel",
+  "displayName": {
+    "en" : "SenseBox:home with respirable dust sensors",
+    "de" : "SenseBox:home mit Feinstaub Sensoren"
+  },
+  "implements": [
+    {
+      "name": "deviceinfo",
+      "schema": {
+        "@id": "urn:azureiot:DeviceManagement:DeviceInformation:1",
+        "@type": "Interface",
+        "displayName": "Device Information",
+        "contents": [
+          {
+            "@type": "Property",
+            "name": "manufacturer",
+            "displayName": "Manufacturer",
+            "schema": "string",
+            "description": "Company name of the device manufacturer. This could be the same as the name of the original equipment manufacturer (OEM). Ex. Contoso."
+          },
+          {
+            "@type": "Property",
+            "name": "model",
+            "displayName": "Device model",
+            "schema": "string",
+            "description": "Device model name or ID. Ex. Surface Book 2."
+          },
+          {
+            "@type": "Property",
+            "name": "swVersion",
+            "displayName": "Software version",
+            "schema": "string",
+            "description": "Version of the software on your device. This could be the version of your firmware. Ex. 1.3.45"
+          },
+          {
+            "@type": "Property",
+            "name": "osName",
+            "displayName": "Operating system name",
+            "schema": "string",
+            "description": "Name of the operating system on the device. Ex. Windows 10 IoT Core."
+          },
+          {
+            "@type": "Property",
+            "name": "processorArchitecture",
+            "displayName": "Processor architecture",
+            "schema": "string",
+            "description": "Architecture of the processor on the device. Ex. x64 or ARM."
+          },
+          {
+            "@type": "Property",
+            "name": "processorManufacturer",
+            "displayName": "Processor manufacturer",
+            "schema": "string",
+            "description": "Name of the manufacturer of the processor on the device. Ex. Intel."
+          },
+          {
+            "@type": "Property",
+            "name": "totalStorage",
+            "displayName": "Total storage",
+            "schema": "long",
+            "displayUnit": "kilobytes",
+            "description": "Total available storage on the device in kilobytes. Ex. 2048000 kilobytes."
+          },
+          {
+            "@type": "Property",
+            "name": "totalMemory",
+            "displayName": "Total memory",
+            "schema": "long",
+            "displayUnit": "kilobytes",
+            "description": "Total available memory on the device in kilobytes. Ex. 256000 kilobytes."
+          }
+        ],
+        "@context": "http://azureiot.com/v1/contexts/IoTModel.json"
+      }
+    },
+    {
+      "name": "settings",
+      "schema": {
+        "@id": "urn:senseBox:home:settings:1",
+        "@type": "Interface",
+        "displayName": "SenseBox settings",
+        "contents": [
+          {
+            "@type": "Property",
+            "name": "name",
+            "schema": "string",
+            "displayName": "Name",
+            "description": "SenseBox name as shown on https://opensensemap.org/"
+          },
+          {
+            "@type": "Property",
+            "name": "_id",
+            "schema": "string",
+            "displayName": "SenseBox ID",
+            "description": "OpenSenseMap ID used for the SenseBox"
+          },
+          {
+            "@type": "Property",
+            "name": "grouptag",
+            "schema": "string",
+            "displayName": "Group name",
+            "description": "Group this box belongs to"
+          },
+          {
+            "@type": "Property",
+            "name": "exposure",
+            "schema": {
+              "@type": "Enum",
+              "valueSchema": "string",
+              "enumValues": [
+                {
+                  "name": "indoor",
+                  "displayName": "Indoor",
+                  "enumValue": "indoor"
+                },
+                {
+                  "name": "outdoor",
+                  "displayName": "Outdoor",
+                  "enumValue": "outdoor"
+                },
+                {
+                  "name": "mobile",
+                  "displayName": "Mobile",
+                  "enumValue": "mobile"
+                },
+                {
+                  "name": "unknown",
+                  "displayName": "unknown",
+                  "enumValue": "Unknown"
+                }
+              ]
+            },
+            "displayName": "Exposure",
+            "description": "Exposure of the box"
+          },
+          {
+            "@type": "Property",
+            "name": "createdAt",
+            "schema": "dateTime",
+            "displayName": "Created at",
+            "description": "Date the SenseBox was originally created"
+          },
+          {
+            "@type": "Property",
+            "name": "updatedAt",
+            "schema": "dateTime",
+            "displayName": "Updated at",
+            "description": "Date the SenseBox was last updated"
+          },
+          {
+            "@id": "urn:senseBox:home:settings:currentlocation:1",
+            "@type": [
+              "Property",
+              "SemanticType/Location"
+            ],
+            "displayName": {
+              "en": "Current location"
+            },
+            "name": "currentlocation",
+            "schema": "geopoint"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HDC1080_sensors",
+      "displayName": "HDC1080 sensors",
+      "schema": {
+        "@id": "urn:senseBox:HDC1080_sensors:1",
+        "@type": "Interface",
+        "displayName": "HDC1080 sensors",
+        "contents": [
+          {
+            "@type": "Telemetry",
+            "name": "humidity",
+            "displayName": {
+              "en" : "Humidity",
+              "de" : "rel. Luftfeuchte" 
+            },
+            "comment": "The humidity measurement data from the built-in HDC1080 sensor.",
+            "schema": "double",
+            "unit": "Units/Humidity/percent",
+            "displayUnit": "%"
+          },
+          {
+            "@type": "Telemetry",
+            "name": "temperature",
+            "displayName": {
+              "en": "Temperature",
+              "de": "Temperatur"
+            },
+            "comment": "The temperature measurement data from the built-in HDC1080 sensor.",
+            "schema": "double",
+            "unit": "Units/Temperature/celsius",
+            "displayUnit": "°C"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BMP280_sensors",
+      "displayName": "BMP280 sensors",
+      "schema": {
+        "@id": "urn:senseBox:BMP280_sensors:1",
+        "@type": "Interface",
+        "displayName": "BMP280 sensors",
+        "contents": [
+          {
+            "@type": "Telemetry",
+            "name": "airpressure",
+            "displayName": {
+              "en" : "Air Pressure",
+              "de" : "Luftdruck" 
+            },
+            "comment": "The air pressure measurement data from the built-in BMP280 sensor.",
+            "schema": "double",
+            "displayUnit": "hPa"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TSL45315_sensors",
+      "displayName": "TSL45315 sensors",
+      "schema": {
+        "@id": "urn:senseBox:TSL45315_sensors:1",
+        "@type": "Interface",
+        "displayName": "TSL45315 sensors",
+        "contents": [
+          {
+            "@type": "Telemetry",
+            "name": "illumination",
+            "displayName": {
+              "en" : "Illumination",
+              "de" : "Beleuchtungsstärke"
+            },
+            "comment": "The illumination measurement data from the built-in TSL45315 sensor.",
+            "schema": "double",
+            "displayUnit": "lx"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VEML6070_sensors",
+      "displayName": "VEML6070 sensors",
+      "schema": {
+        "@id": "urn:senseBox:VEML6070_sensors:1",
+        "@type": "Interface",
+        "displayName": "VEML6070 sensors",
+        "contents": [
+          {
+            "@type": "Telemetry",
+            "name": "uvradiation",
+            "displayName": {
+              "en" : "UV Radiation",
+              "de" : "UV-Intensität"
+            },
+            "comment": "The UV radiation measurement data from the built-in VEML6070 sensor.",
+            "schema": "double",
+            "displayUnit": "μW/cm²"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SDS011_sensors",
+      "displayName": "SDS 011 sensors",
+      "schema": {
+        "@id": "urn:senseBox:SDS011_sensors:1",
+        "@type": "Interface",
+        "displayName": "SDS 011 sensors",
+        "contents": [
+          {
+            "@type": "Telemetry",
+            "name": "pm10",
+            "displayName": "PM10",
+            "comment": "The PM 10 measurement data from the built-in SDS 011 sensor.",
+            "schema": "double",
+            "displayUnit": "µg/m³"
+          },
+          {
+            "@type": "Telemetry",
+            "name": "pm25",
+            "displayName": "PM2.5",
+            "comment": "The PM 2.5 measurement data from the built-in SDS 011 sensor.",
+            "schema": "double",
+            "displayUnit": "µg/m³"
+          }
+        ]
+      }
+    }
+  ],
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json"
+}

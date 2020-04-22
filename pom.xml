@@ -34,6 +34,7 @@
         <module>opensense-intf</module>
 		<module>opensensepublisher</module>
 		<module>opensenseprotocoltranslater</module>
+		<module>sensorbox-publisher</module>
     </modules>
     
 </project>
