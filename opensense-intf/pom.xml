@@ -5,7 +5,7 @@
     
 	<groupId>com.microsoft.samples.iot.opensense</groupId>
 	<artifactId>opensense-intf</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     
 	<name>OpenSenseMap interfaces</name>
 	<description>DTO classes for OpenSenseMap service</description>

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.microsoft.samples.iot.opensense</groupId>
 	<artifactId>sensorbox-publisher</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>sensorbox-publisher</name>
 	<description>Sample showing connectivity between Sensorbox and Azure IoT</description>
 
@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.microsoft.samples.iot.opensense</groupId>
 			<artifactId>opensense-intf</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
