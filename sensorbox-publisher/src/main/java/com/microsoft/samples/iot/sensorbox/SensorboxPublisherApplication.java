@@ -39,7 +39,7 @@ public class SensorboxPublisherApplication {
 
 		IoTHubSender ioTHubSender = new IoTHubSender();
 		ioTHubSender.setDeviceClient(new DeviceClient(this.iotHubConnectionString, IotHubClientProtocol.AMQPS));
-		ioTHubSender.getDeviceClient().open();
+		ioTHubSender.open();
 
 		return ioTHubSender;
 	}
@@ -50,7 +50,7 @@ public class SensorboxPublisherApplication {
 
 		IoTHubSender ioTHubSender = new IoTHubSender();
 		ioTHubSender.setupWithDPS(this.dpsScopeID, this.deviceID, this.deviceKey);
-		ioTHubSender.getDeviceClient().open();
+		ioTHubSender.open();
 
 		return ioTHubSender;
 	}

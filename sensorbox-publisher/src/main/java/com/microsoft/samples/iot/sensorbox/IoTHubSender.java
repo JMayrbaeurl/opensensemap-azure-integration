@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -17,6 +18,8 @@ import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol;
 import com.microsoft.azure.sdk.iot.device.IotHubEventCallback;
 import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 import com.microsoft.azure.sdk.iot.device.Message;
+import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.azure.sdk.iot.device.DeviceTwin.TwinPropertyCallBack;
 import com.microsoft.azure.sdk.iot.provisioning.device.ProvisioningDeviceClient;
 import com.microsoft.azure.sdk.iot.provisioning.device.ProvisioningDeviceClientRegistrationCallback;
 import com.microsoft.azure.sdk.iot.provisioning.device.ProvisioningDeviceClientRegistrationResult;
@@ -56,6 +59,17 @@ public class IoTHubSender {
     private SenseBoxValues lastSent;
 
     private boolean sendOnlyNewer = true;
+
+    public void open() throws IOException {
+
+        this.deviceClient.open();
+        this.deviceClient.startDeviceTwin(new DeviceTwinStatusCallBack(), null, new TwinPropertyCallBack(){
+            @Override
+            public void TwinPropertyCallBack(Property property, Object context) {
+                logger.info("Desired property '" + property.getKey() + "' changed to '" + property.getValue() + "'. Ignoring");
+            }
+        }, null);
+    }
 
     /**
      * 
@@ -126,6 +140,7 @@ public class IoTHubSender {
         return this.lastSent.getLastMeasurementAt().before(latestValue.getLastMeasurementAt());
     }
 
+    @SuppressWarnings("unchecked")
     private static class EventCallback implements IotHubEventCallback {
         public void execute(IotHubStatusCode status, Object context) {
 
@@ -140,6 +155,15 @@ public class IoTHubSender {
                 IoTHubSender sender = (IoTHubSender) contextMap.get("this");
                 sender.lastSent = (SenseBoxValues) contextMap.get("latestValue");
             }
+        }
+    }
+
+    // DeviceTwin status updates
+    protected static class DeviceTwinStatusCallBack implements IotHubEventCallback {
+        @Override
+        public void execute(IotHubStatusCode status, Object context) {
+            if (status != IotHubStatusCode.OK_EMPTY)
+                logger.debug("IoT Hub responded to device twin operation with status " + status.name());
         }
     }
 
@@ -180,11 +204,15 @@ public class IoTHubSender {
 
     private static final int MAX_TIME_TO_WAIT_FOR_REGISTRATION = 10000; // in milli seconds
 
-    public void setupWithDPS(String dpsScopeID, String deviceID, String deviceKey) throws IOException {
+    /**
+     * 
+     */
+    public void setupWithDPS(@NonNull final String dpsScopeID, @NonNull final String deviceID,
+            @NonNull final String deviceKey) throws IOException {
 
         DeviceClient iothubClient = null;
-        SecurityProviderSymmetricKey securityClientSymmetricKey = new SecurityProviderSymmetricKey(
-                deviceKey.getBytes(), deviceID);
+        SecurityProviderSymmetricKey securityClientSymmetricKey = new SecurityProviderSymmetricKey(deviceKey.getBytes(),
+                deviceID);
         ProvisioningDeviceClient provisioningDeviceClient = null;
 
         try {
@@ -194,82 +222,106 @@ public class IoTHubSender {
                     dpsScopeID, ProvisioningDeviceClientTransportProtocol.HTTPS, securityClientSymmetricKey);
             provisioningDeviceClient.registerDevice(new ProvisioningDeviceClientRegistrationCallbackImpl(),
                     provisioningStatus);
-            while (provisioningStatus.provisioningDeviceClientRegistrationInfoClient
-                    .getProvisioningDeviceClientStatus() != ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ASSIGNED) {
-                if (provisioningStatus.provisioningDeviceClientRegistrationInfoClient
-                        .getProvisioningDeviceClientStatus() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ERROR
-                        || provisioningStatus.provisioningDeviceClientRegistrationInfoClient
-                                .getProvisioningDeviceClientStatus() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_DISABLED
-                        || provisioningStatus.provisioningDeviceClientRegistrationInfoClient
-                                .getProvisioningDeviceClientStatus() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_FAILED) {
-                    provisioningStatus.exception.printStackTrace();
-                    System.out.println("Registration error, bailing out");
-                    break;
+
+            while (provisioningStatus.status() != ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ASSIGNED) {
+                if (provisioningStatus.status() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ERROR
+                        || provisioningStatus
+                                .status() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_DISABLED
+                        || provisioningStatus
+                                .status() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_FAILED) {
+
+                    logger.error("Device provisioning error", provisioningStatus.exception);
+                    throw new IOException("Device provisioning error", provisioningStatus.exception);
                 }
-                System.out.println("Waiting for Provisioning Service to register");
+
                 Thread.sleep(MAX_TIME_TO_WAIT_FOR_REGISTRATION);
             }
 
-            if (provisioningStatus.provisioningDeviceClientRegistrationInfoClient
-                    .getProvisioningDeviceClientStatus() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ASSIGNED) {
-                        
-                System.out.println("IotHUb Uri : "
-                        + provisioningStatus.provisioningDeviceClientRegistrationInfoClient.getIothubUri());
-                System.out.println("Device ID : "
-                        + provisioningStatus.provisioningDeviceClientRegistrationInfoClient.getDeviceId());
+            if (provisioningStatus.status() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ASSIGNED) {
+
+                logger.info("Device provisioned with ID '" + provisioningStatus.result.getDeviceId()
+                        + "' and registered at IoT Hub '" + provisioningStatus.result.getIothubUri() + "'");
 
                 // connect to iothub
-                String iotHubUri = provisioningStatus.provisioningDeviceClientRegistrationInfoClient.getIothubUri();
-                String deviceId = provisioningStatus.provisioningDeviceClientRegistrationInfoClient.getDeviceId();
+                String iotHubUri = provisioningStatus.result.getIothubUri();
+                String deviceId = provisioningStatus.result.getDeviceId();
                 try {
                     iothubClient = DeviceClient.createFromSecurityProvider(iotHubUri, deviceId,
                             securityClientSymmetricKey, IotHubClientProtocol.AMQPS);
                     iothubClient.open();
                 } catch (IOException | URISyntaxException e) {
-                    System.out.println("Device client threw an exception: " + e.getMessage());
+
+                    logger.error("Open connection to IoT Hub threw an exception", e);
+
                     if (iothubClient != null) {
                         iothubClient.closeNow();
                     }
+                    if (e instanceof IOException)
+                        throw (IOException) e;
+                    else
+                        throw new IOException("Open connection to IoT Hub threw an exception", e);
                 }
                 this.deviceClient = iothubClient;
+            } else {
+                logger.error("Provisioning Device Client returned error ");
+                throw new IOException("Provisioning Device Client returned error ");
             }
         } catch (ProvisioningDeviceClientException | InterruptedException e) {
 
-            System.out.println("Provisioning Device Client threw an exception" + e.getMessage());
+            logger.error("Provisioning Device Client threw an exception", e);
+            throw new IOException("Provisioning Device Client threw an exception", e);
+        } finally {
+
             if (provisioningDeviceClient != null) {
                 provisioningDeviceClient.closeNow();
             }
-
-            throw new RuntimeException(e);
-        }
-
-        if (provisioningDeviceClient != null) {
-            provisioningDeviceClient.closeNow();
         }
     }
 
-    static class ProvisioningStatus
-    {
-        ProvisioningDeviceClientRegistrationResult provisioningDeviceClientRegistrationInfoClient = new ProvisioningDeviceClientRegistrationResult();
+    static class ProvisioningStatus {
+        ProvisioningDeviceClientRegistrationResult result = new ProvisioningDeviceClientRegistrationResult();
         Exception exception;
+
+        public ProvisioningDeviceClientStatus status() {
+            return result.getProvisioningDeviceClientStatus();
+        };
     }
 
-    static class ProvisioningDeviceClientRegistrationCallbackImpl implements ProvisioningDeviceClientRegistrationCallback
-    {
+    static class ProvisioningDeviceClientRegistrationCallbackImpl
+            implements ProvisioningDeviceClientRegistrationCallback {
         @Override
-        public void run(ProvisioningDeviceClientRegistrationResult provisioningDeviceClientRegistrationResult, Exception exception, Object context)
-        {
-            if (context instanceof ProvisioningStatus)
-            {
+        public void run(ProvisioningDeviceClientRegistrationResult provisioningDeviceClientRegistrationResult,
+                Exception exception, Object context) {
+            if (context instanceof ProvisioningStatus) {
                 ProvisioningStatus status = (ProvisioningStatus) context;
-                status.provisioningDeviceClientRegistrationInfoClient = provisioningDeviceClientRegistrationResult;
+                status.result = provisioningDeviceClientRegistrationResult;
                 status.exception = exception;
-            }
-            else
-            {
+            } else {
                 System.out.println("Received unknown context");
             }
         }
+    }
+
+    public void reportSettings(@NonNull final SenseBoxValues fromValues) throws IllegalArgumentException, IOException {
+
+        HashSet<Property> set = new HashSet<>();
+        set.add(new Property("manufacturer", "SenseBox")); // (manufacturer)
+        set.add(new Property("model", fromValues.getModel())); // (model)
+        //set.add(new Property("swVersion", "text")); // (swVersion)
+        //set.add(new Property("osName", "text")); // (osName)
+        //set.add(new Property("processorArchitecture", "text")); // (processorArchitecture)
+        //set.add(new Property("processorManufacturer", "text")); // (processorManufacturer)
+        //set.add(new Property("totalStorage", 1)); // (totalStorage) <- try another value!
+        //set.add(new Property("totalMemory", 2)); // (totalMemory) <- try another value!
+        //set.add(new Property("currentlocation", 10)); // (currentlocation) <- try another value!
+        set.add(new Property("name", fromValues.getName())); // (name)
+        set.add(new Property("_id", fromValues.getId())); // (_id)
+        set.add(new Property("grouptag", fromValues.getGrouptag())); // (grouptag)
+        set.add(new Property("exposure", fromValues.getExposure())); // (exposure) <- try another value!
+        set.add(new Property("createdAt", fromValues.getCreatedAt())); // (createdAt) <- try another value!
+        set.add(new Property("updatedAt", fromValues.getUpdatedAt()));// (updatedAt) <- try another value!
+
+        this.deviceClient.sendReportedProperties(set);
     }
 
     public DeviceClient getDeviceClient() {
