@@ -38,4 +38,4 @@ docker run -d --name sensebox-publisher \
 
 Sample dashboard from Azure IoT Central showing measurements from a SenseBox:home device
 
-![None](./assets/senseboxiotcentraldashboard.png)
+![None](./assets/senseboxiotcentraldashboard2.png)
