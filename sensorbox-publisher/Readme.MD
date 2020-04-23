@@ -36,6 +36,6 @@ docker run -d --name sensebox-publisher \
 
 ### Azure IoT Central Integration
 
-Sample dashboard from Azure IoT Central showing measurements from a SenseBox:home device
+Sample dashboard from Azure IoT Central showing measurements from a SenseBox:home device ([IoT Central Application template available](https://apps.azureiotcentral.com/build/new/137f45f1-26f3-4bf5-9d53-ad4daae2a2dc))
 
 ![None](./assets/senseboxiotcentraldashboard2.png)
