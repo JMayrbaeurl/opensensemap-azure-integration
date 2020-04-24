@@ -4,7 +4,7 @@
 
 This sample provides [IoT Plug&Play](https://docs.microsoft.com/en-us/azure/iot-pnp/) support for Azure IoT by providing a [Device capability model](https://github.com/JMayrbaeurl/opensensemap-azure-integration/blob/master/device%20models/senseBox_home.capabilitymodel.json) for the [SenseBox:home](https://sensebox.de/en/products) device.
 
-## Configuration
+## Configuration for a single device
 
 Currently only sending the latest measurements of one single senseBox is supported. Put the SenseBox ID in the [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `opensensemap.publisher.boxid`. The send frequency is defined in the [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `opensensemap.publisher.fixedRate` and defaults to 60000 (in milliseconds -> 1 minute default).
 
@@ -15,6 +15,14 @@ Use one of the following options:
   * DPS Scope ID: [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `sensorbox.publisher.dps.scope`
   * DPS Registration ID: [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `sensorbox.publisher.dps.deviceID`
   * DPS Device Key: [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `sensorbox.publisher.dps.deviceKey`
+
+## Configuration for multiple devices
+
+Currently only [IoT DPS with symmetric keys](https://docs.microsoft.com/en-us/azure/iot-dps/concepts-symmetric-key-attestation#group-enrollments) enabled scenarios are supported for multiple senseBox devices.
+
+* [IoT DPS configuration with symmetric keys](https://docs.microsoft.com/en-us/azure/iot-dps/concepts-symmetric-key-attestation#group-enrollments):
+  * DPS Scope ID: [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `sensorbox.publisher.dps.scope`
+  * Boxes configuration: Comma separated list of box configuration in [Spring Boot property](https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/boot-features-external-config.html) `sensorbox.publisher.dps.boxesCreds`. E.g. "Box1ID;Box1DeviceKey;Box1DeviceKey,Box2ID;Box2DeviceKey;Box2DeviceKey" (See DPS configuration for a single device. Be careful with used characters)
 
 ## Running the component
 
