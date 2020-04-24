@@ -1,0 +1,10 @@
+### Correct the subdomains in the URLs and use your own API tokens
+
+### Get all devices
+GET https://sensebox.azureiotcentral.com/api/preview/devices
+Authorization: [Insert your API token]
+
+### Get last temperature value from sensor 'senseBoxIoTCentral001'
+GET https://sensebox.azureiotcentral.com/api/preview/devices/senseBoxIoTCentral001/components/HDC1080_sensors/telemetry/temperature
+Authorization: [Insert your API token]
+

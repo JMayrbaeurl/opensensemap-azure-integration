@@ -1,0 +1,102 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerGroupName": {
+      "type": "string",
+      "defaultValue": "senseboxContainerGroup",
+      "metadata": {
+        "description": "Container Group name."
+      }
+    }
+  },
+  "variables": {
+    "container1name": "[Insert your value]",
+    "container1image": "jmayrbaeurl/sensebox-publisher:latest",
+    "container2name": "[Insert your value]",
+    "container2image": "jmayrbaeurl/sensebox-publisher:latest"
+  },
+  "resources": [
+    {
+      "name": "[parameters('containerGroupName')]",
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "containers": [
+          {
+            "name": "[variables('container1name')]",
+            "properties": {
+              "image": "[variables('container1image')]",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGb": 0.5
+                }
+              },
+              "environmentVariables": [
+                {
+                  "name": "server_port",
+                  "value": "8081"
+                },
+                {
+                  "name": "opensensemap_publisher_boxid",
+                  "value": "[Insert your value]"
+                },
+                {
+                  "name": "sensorbox_publisher_dps_scope",
+                  "value": "[Insert your value]"
+                },
+                {
+                  "name": "sensorbox_publisher_dps_deviceID",
+                  "value": "[Insert your value]"
+                },
+                {
+                  "name": "sensorbox_publisher_dps_deviceKey",
+                  "value": "[Insert your value]"
+                }
+              ]
+            }
+          },
+          {
+            "name": "[variables('container2name')]",
+            "properties": {
+              "image": "[variables('container2image')]",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGb": 0.5
+                }
+              },
+              "environmentVariables": [
+                {
+                  "name": "server_port",
+                  "value": "8082"
+                },
+                {
+                  "name": "opensensemap_publisher_boxid",
+                  "value": "[Insert your value]"
+                },
+                {
+                  "name": "sensorbox_publisher_dps_scope",
+                  "value": "[Insert your value]"
+                },
+                {
+                  "name": "sensorbox_publisher_dps_deviceID",
+                  "value": "[Insert your value]"
+                },
+                {
+                  "name": "sensorbox_publisher_dps_deviceKey",
+                  "value": "[Insert your value]"
+                }
+              ]
+            }
+          }
+        ],
+        "osType": "Linux"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

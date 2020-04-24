@@ -1,0 +1,71 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerGroups_sensebox_publisher_name": {
+            "defaultValue": "sensebox-publisher",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2018-10-01",
+            "name": "[parameters('containerGroups_sensebox_publisher_name')]",
+            "location": "northeurope",
+            "properties": {
+                "containers": [
+                    {
+                        "name": "[parameters('containerGroups_sensebox_publisher_name')]",
+                        "properties": {
+                            "image": "[concat('jmayrbaeurl/', parameters('containerGroups_sensebox_publisher_name'))]",
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 8080
+                                }
+                            ],
+                            "environmentVariables": [
+                                {
+                                    "name": "opensensemap_publisher_boxid",
+                                    "value": "5e981cb545f937001cca5734"
+                                },
+                                {
+                                    "name": "sensorbox_publisher_dps_scope",
+                                    "value": "[Insert IoT Central DPS Scope ID]"
+                                },
+                                {
+                                    "name": "sensorbox_publisher_dps_deviceID",
+                                    "value": "senseBoxIoTCentral001"
+                                },
+                                {
+                                    "name": "sensorbox_publisher_dps_deviceKey",
+                                    "value": "[Insert your Device key from Central]"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 0.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "restartPolicy": "OnFailure",
+                "ipAddress": {
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 8080
+                        }
+                    ],
+                    "ip": "51.104.169.110",
+                    "type": "Public"
+                },
+                "osType": "Linux"
+            }
+        }
+    ]
+}
