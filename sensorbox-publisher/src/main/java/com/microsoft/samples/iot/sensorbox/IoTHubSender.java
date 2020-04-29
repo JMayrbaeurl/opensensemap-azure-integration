@@ -20,6 +20,7 @@ import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.TwinPropertyCallBack;
+import com.microsoft.azure.sdk.iot.provisioning.device.AdditionalData;
 import com.microsoft.azure.sdk.iot.provisioning.device.ProvisioningDeviceClient;
 import com.microsoft.azure.sdk.iot.provisioning.device.ProvisioningDeviceClientRegistrationCallback;
 import com.microsoft.azure.sdk.iot.provisioning.device.ProvisioningDeviceClientRegistrationResult;
@@ -217,11 +218,13 @@ public class IoTHubSender {
 
         try {
             ProvisioningStatus provisioningStatus = new ProvisioningStatus();
+            AdditionalData addData = new AdditionalData();
+            addData.setProvisioningPayload("{ \"iotcModelId\" : \"urn:senseBox:sample:homeV2WifiFeinstaub:1\"} ");
 
             provisioningDeviceClient = ProvisioningDeviceClient.create("global.azure-devices-provisioning.net",
                     dpsScopeID, ProvisioningDeviceClientTransportProtocol.HTTPS, securityClientSymmetricKey);
             provisioningDeviceClient.registerDevice(new ProvisioningDeviceClientRegistrationCallbackImpl(),
-                    provisioningStatus);
+                    provisioningStatus, addData);
 
             while (provisioningStatus.status() != ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ASSIGNED) {
                 if (provisioningStatus.status() == ProvisioningDeviceClientStatus.PROVISIONING_DEVICE_STATUS_ERROR
